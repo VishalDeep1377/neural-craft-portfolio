@@ -14,7 +14,10 @@ import ContactSection      from '@/components/sections/ContactSection';
 import GlobalBackground    from '@/components/ui/GlobalBackground';
 import Footer              from '@/components/ui/Footer';
 
-const LoadingScreen = dynamic(() => import('@/components/ui/LoadingScreen'), { ssr: false });
+const LoadingScreen  = dynamic(() => import('@/components/ui/LoadingScreen'),  { ssr: false });
+const AIAssistant    = dynamic(() => import('@/components/ui/AIAssistant'),    { ssr: false });
+const CommandPalette = dynamic(() => import('@/components/ui/CommandPalette'), { ssr: false });
+const TerminalDrawer = dynamic(() => import('@/components/ui/TerminalDrawer'), { ssr: false });
 
 const PHOTO = '/images/headshot.jpg';
 
@@ -33,7 +36,6 @@ export default function Page() {
 
   return (
     <>
-
       <AnimatePresence>
         {!done && <LoadingScreen onDone={handleDone} />}
       </AnimatePresence>
@@ -56,6 +58,11 @@ export default function Page() {
           <CertificationsSection />
           {NAV_DIVIDER}
           <ContactSection />
+
+          {/* Interactive AI & Workstation Widgets */}
+          <CommandPalette />
+          <TerminalDrawer />
+          <AIAssistant />
 
           {/* Footer */}
           <Footer />
