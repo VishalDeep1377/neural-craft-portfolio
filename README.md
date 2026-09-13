@@ -1,14 +1,21 @@
 <div align="center">
 
+  <img src="./public/readme_header_banner.png" alt="VISHAL DEEP — Software Engineer | Full Stack + AI Systems" width="100%" />
+
+  <br />
+  <br />
+
 ```text
-       ___    ____   ______                    ______            __  __      ___      
-      /   |  /  _/  / ____/___  _____ ____    / __ \____  _____/ /_/3/___  /l/ /_    
-     / /| |  / /   / /_  / __ \/ ___// __ \  / /_/ / __ \/ ___/ __/ /_/ / / / __ \   
-    / ___ |_/ /   / __/ / /_/ / /   / /_/ / / ____/ /_/ / /  / /_/ __/ /_/ / /_/ /   
-   /_/  |_/___/  /_/    \____/_/    \____/ /_/    \____/_/   \__/\____/\____/_.___/    
+    _   _______  __  ______  ___    __     ______ ____   ___   ______ ______
+   / | / / ____/ / / / / __ \/   |  / /    / ____// __ \ /   | / ____// _  __/
+  /  |/ / __/   / / / / /_/ / /| | / /    / /    / /_/ // /| |/ /_    / / /   
+ / /|  / /___  / /_/ / _, _/ ___ |/ /___ / /___/ _, _// ___ / __/   / / /    
+/_/ |_/_____/  \____/_/ |_/_/  |_/_____/ \____/_/ |_|/_/  |_/_/    /_/ /     
+                                                                             
+                         --- PORTFOLIO V2 ---
 ```
 
-  # ⚡ VISHAL DEEP — NEXT-GEN AI & FULL-STACK ENGINEER PORTFOLIO
+  # ⚡ NEURAL-CRAFT-PORTFOLIO
 
   <p align="center">
     <b>An elite, state-of-the-art developer portfolio featuring WebGL shaders, interactive canvas physics, custom electric border wrappers, and an integrated AI certification showcase.</b>
@@ -41,7 +48,7 @@
 
 ## 📖 Executive Summary & Design Vision
 
-This repository contains the source code for **Vishal Deep's** personal portfolio platform — designed to pioneer a high-fidelity **"Dark AI-Lab"** web aesthetic. Moving away from standard static templates, this application blends cutting-edge WebGL shader engines, custom HTML5 Canvas displacement math, interactive 3D physics cards, and instant modal lightboxes to deliver an unforgettable developer showcase.
+This repository contains the source code for **Vishal Deep's** personal portfolio platform — **`neural-craft-portfolio`** — designed to pioneer a high-fidelity **"Dark AI-Lab"** web aesthetic. Moving away from standard static templates, this application blends cutting-edge WebGL shader engines, custom HTML5 Canvas displacement math, interactive 3D physics cards, and instant modal lightboxes to deliver an unforgettable developer showcase.
 
 ### 🎯 Core Philosophy
 - **Visual Distinction**: Implements vibrant, curated HSL color spaces, subtle neon glow halos, and glassmorphic depth layers.
@@ -54,7 +61,7 @@ This repository contains the source code for **Vishal Deep's** personal portfoli
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│                               AI-LAB PORTFOLIO SUITE                            │
+│                           NEURAL-CRAFT PORTFOLIO SUITE                          │
 ├──────────────────┬───────────────────┬───────────────────┬──────────────────────┤
 │ 🌌 DARK AI-LAB   │ ⚡ ELECTRIC BORDER │ 🧪 MOLTEN METAL   │ 📜 VERIFIED LIGHTBOX │
 │ Glassmorphism &  │ Canvas electric   │ OGL WebGL liquid  │ PDF & Image credential│
@@ -147,7 +154,7 @@ import CertLogo from '@/components/ui/CertLogo';
 ## 📐 Project Architecture & File Hierarchy
 
 ```text
-portfolio-vishaldeep/
+neural-craft-portfolio/
 │
 ├── public/
 │   ├── certifications/                 # Verified PDF certificates & images
@@ -159,6 +166,7 @@ portfolio-vishaldeep/
 │   │   ├── Full-Stack Web Development Specialization.pdf
 │   │   ├── nitrostack hackathon.jpg
 │   │   └── dominion 2026 hacathon.pdf
+│   ├── readme_header_banner.png        # Gradient header banner
 │   ├── vishal.mp4                      # Hero workstation showcase video
 │   └── favicon.ico                     # Site favicon icon
 │
@@ -294,10 +302,10 @@ To guarantee silky smooth 60 FPS transitions and instant page loads, the project
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_GITHUB_USERNAME/ai-forge-portfolio.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/neural-craft-portfolio.git
 
 # 2. Navigate to project root
-cd ai-forge-portfolio
+cd neural-craft-portfolio
 
 # 3. Install node dependencies
 npm install
@@ -326,9 +334,9 @@ npm run start
 
 This portfolio is tailored for continuous deployment via **Vercel**:
 
-1. Push your repository to **GitHub**.
+1. Push your repository to **GitHub** as `neural-craft-portfolio`.
 2. Visit [Vercel Dashboard](https://vercel.com/new) and select **"Add New Project"**.
-3. Import your `ai-forge-portfolio` repo.
+3. Import your `neural-craft-portfolio` repo.
 4. Set Framework Preset to **Next.js**.
 5. Click **Deploy**. Vercel will automatically build and deploy your application to an edge network CDN.
 
@@ -374,7 +382,7 @@ jobs:
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/YOUR_GITHUB_USERNAME/ai-forge-portfolio/issues).
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/YOUR_GITHUB_USERNAME/neural-craft-portfolio/issues).
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -394,7 +402,7 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 
 <div align="center">
 
-  **Vishal Deep** — *AI & Full-Stack Engineer*
+  **Vishal Deep** — *Software Engineer \| Full Stack + AI Systems*
 
   [![LinkedIn](https://img.shields.io/badge/LinkedIn-Vishal_Deep-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/)
   [![GitHub](https://img.shields.io/badge/GitHub-Vishal_Deep-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/)
