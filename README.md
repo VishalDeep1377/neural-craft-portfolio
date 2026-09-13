@@ -1,6 +1,25 @@
 <div align="center">
 
-  <img src="./public/videos/readme_header_banner.png" alt="VISHAL DEEP — Software Engineer | Full Stack + AI Systems" width="100%" />
+  <svg width="100%" height="160" viewBox="0 0 1200 160" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius: 12px; overflow: hidden; width: 100%; max-width: 1200px;">
+    <rect width="1200" height="160" rx="12" fill="url(#gradient-banner)" />
+    <path d="M0 110 C 300 140, 600 90, 1200 120 L 1200 160 L 0 160 Z" fill="rgba(0,0,0,0.25)" />
+    <path d="M0 130 C 400 100, 800 150, 1200 130 L 1200 160 L 0 160 Z" fill="rgba(0,0,0,0.35)" />
+    
+    <text x="600" y="72" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-weight="900" font-size="44" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">
+      VISHAL DEEP
+    </text>
+    <text x="600" y="114" font-family="'JetBrains Mono', 'Segoe UI', monospace" font-weight="600" font-size="18" fill="rgba(255,255,255,0.9)" text-anchor="middle" letter-spacing="1">
+      Software Engineer | Full Stack + AI Systems
+    </text>
+    
+    <defs>
+      <linearGradient id="gradient-banner" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#9A5200" />
+        <stop offset="40%" stop-color="#802844" />
+        <stop offset="100%" stop-color="#551A5A" />
+      </linearGradient>
+    </defs>
+  </svg>
 
   <br />
   <br />
@@ -166,7 +185,7 @@ neural-craft-portfolio/
 │   │   ├── Full-Stack Web Development Specialization.pdf
 │   │   ├── nitrostack hackathon.jpg
 │   │   └── dominion 2026 hacathon.pdf
-│   ├── readme_header_banner.png        # Gradient header banner
+│   ├── readme_header_banner.svg        # SVG header banner
 │   ├── vishal.mp4                      # Hero workstation showcase video
 │   └── favicon.ico                     # Site favicon icon
 │
