@@ -129,7 +129,6 @@ function Hamburger({ open, onClick }: { open: boolean; onClick: () => void }) {
 
 /* ── Mobile Drawer ── */
 function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
-  // Lock body scroll when open
   useEffect(() => {
     if (open) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
@@ -149,28 +148,30 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
             onClick={onClose}
             style={{
               position: 'fixed', inset: 0, zIndex: 9997,
-              background: 'rgba(4,4,14,0.75)',
-              backdropFilter: 'blur(4px)',
+              background: 'rgba(4, 4, 16, 0.82)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
             }}
           />
+
           {/* Drawer panel */}
           <motion.div
-            initial={{ y: -24, opacity: 0, scale: 0.96 }}
+            initial={{ y: -30, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: -16, opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ y: -20, opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: 'fixed',
               top: 84,
               left: 16, right: 16,
               zIndex: 9998,
-              borderRadius: 22,
-              background: 'rgba(8,8,20,0.97)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(32px) saturate(180%)',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 60px rgba(99,102,241,0.15)',
+              borderRadius: 24,
+              background: 'linear-gradient(165deg, rgba(14, 16, 32, 0.96) 0%, rgba(8, 9, 20, 0.98) 100%)',
+              border: '1px solid rgba(139, 92, 246, 0.25)',
+              backdropFilter: 'blur(36px) saturate(200%)',
+              boxShadow: '0 30px 90px rgba(0, 0, 0, 0.9), 0 0 50px rgba(99, 102, 241, 0.25)',
               overflow: 'hidden',
-              padding: '8px 12px 20px',
+              padding: '10px 14px 22px',
               maxHeight: 'calc(100vh - 100px)',
               overflowY: 'auto',
             }}
@@ -181,124 +182,157 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
               animate={{ backgroundPosition: '200% 0%' }}
               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
               style={{
-                height: 2, marginBottom: 12,
-                backgroundImage: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.8), rgba(168,85,247,0.8), rgba(34,211,238,0.8), transparent)',
+                height: 3, marginBottom: 12,
+                backgroundImage: 'linear-gradient(90deg, #38BDF8, #6366F1, #EC4899, #10B981, #38BDF8)',
                 backgroundSize: '200% 100%',
                 borderRadius: 99,
               }}
             />
 
-            {/* Header info bar */}
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '6px 12px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-              marginBottom: 10,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span className="dot-live" style={{ width: 5, height: 5 }} />
-                <span style={{ fontFamily: 'var(--mono)', fontSize: '.65rem', color: 'rgba(255,255,255,0.5)' }}>
-                  Chennai, India
-                </span>
+            {/* Monogram & Title Header */}
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '6px 8px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+                marginBottom: 12,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {/* Monogram Badge */}
+                <div style={{
+                  position: 'relative', width: 34, height: 34, borderRadius: 10,
+                  background: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 800, fontSize: '0.75rem', color: '#ffffff',
+                  boxShadow: '0 0 15px rgba(99,102,241,0.5)',
+                }}>
+                  VD
+                </div>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '0.85rem', color: '#ffffff', fontWeight: 700 }}>Vishal Deep</h4>
+                  <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--mono)' }}>SRM University · Generative AI</span>
+                </div>
               </div>
-              <span style={{ fontFamily: 'var(--mono)', fontSize: '.6rem', color: '#6366f1', letterSpacing: '.1em', textTransform: 'uppercase' }}>
-                AI-Lab Workstation
-              </span>
-            </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: 100, border: '1px solid rgba(16, 185, 129, 0.25)' }}>
+                <span className="dot-live" style={{ width: 6, height: 6, background: '#10B981', borderRadius: '50%' }} />
+                <span style={{ fontFamily: 'var(--mono)', fontSize: '.6rem', color: '#10B981', fontWeight: 600 }}>Active</span>
+              </div>
+            </motion.div>
 
             {/* ── AI-Lab Interactive Tools ── */}
-            <div style={{ margin: '4px 4px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ fontSize: '0.6rem', fontFamily: 'var(--mono)', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '.12em', paddingLeft: 4 }}>
-                Workstation Tools & AI
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              style={{ margin: '4px 2px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}
+            >
+              <div style={{ fontSize: '0.6rem', fontFamily: 'var(--mono)', color: 'rgba(167, 139, 250, 0.9)', textTransform: 'uppercase', letterSpacing: '.14em', paddingLeft: 4, fontWeight: 700 }}>
+                ⚡ Workstation Tools & AI
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                 {/* Search Card */}
                 <motion.button
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     onClose();
                     window.dispatchEvent(new Event('open-command-palette'));
                   }}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    borderRadius: 12,
-                    padding: '10px 6px',
+                    background: 'linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: 14,
+                    padding: '12px 6px',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: 3,
+                    gap: 4,
                     cursor: 'pointer',
                     color: '#ffffff',
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
                   }}
                 >
-                  <span style={{ fontSize: 16 }}>🔍</span>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.66rem', fontWeight: 600 }}>Search</span>
-                  <span style={{ fontSize: '0.56rem', color: 'rgba(255,255,255,0.4)' }}>Ctrl + K</span>
+                  <span style={{ fontSize: 20 }}>🔍</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.68rem', fontWeight: 700 }}>Search</span>
+                  <span style={{ fontSize: '0.56rem', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.1)', padding: '1px 5px', borderRadius: 4 }}>Ctrl K</span>
                 </motion.button>
 
                 {/* Terminal CLI Card */}
                 <motion.button
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     onClose();
                     window.dispatchEvent(new Event('open-terminal'));
                   }}
                   style={{
-                    background: 'rgba(16, 185, 129, 0.08)',
-                    border: '1px solid rgba(16, 185, 129, 0.3)',
-                    borderRadius: 12,
-                    padding: '10px 6px',
+                    background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.04))',
+                    border: '1px solid rgba(16, 185, 129, 0.4)',
+                    borderRadius: 14,
+                    padding: '12px 6px',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: 3,
+                    gap: 4,
                     cursor: 'pointer',
                     color: '#10B981',
+                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.15)',
                   }}
                 >
-                  <span style={{ fontSize: 16 }}>💻</span>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.66rem', fontWeight: 600 }}>CLI Terminal</span>
-                  <span style={{ fontSize: '0.56rem', color: 'rgba(16, 185, 129, 0.7)' }}>$ vishal</span>
+                  <span style={{ fontSize: 20 }}>💻</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.68rem', fontWeight: 700 }}>CLI</span>
+                  <span style={{ fontSize: '0.56rem', color: '#10B981', background: 'rgba(16, 185, 129, 0.15)', padding: '1px 5px', borderRadius: 4 }}>$ vishal</span>
                 </motion.button>
 
                 {/* Vishal-AI Co-Pilot Card */}
                 <motion.button
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     onClose();
                     window.dispatchEvent(new Event('open-ai-chat'));
                   }}
                   style={{
-                    background: 'rgba(56, 189, 248, 0.08)',
-                    border: '1px solid rgba(56, 189, 248, 0.3)',
-                    borderRadius: 12,
-                    padding: '10px 6px',
+                    background: 'linear-gradient(145deg, rgba(56, 189, 248, 0.12), rgba(56, 189, 248, 0.04))',
+                    border: '1px solid rgba(56, 189, 248, 0.4)',
+                    borderRadius: 14,
+                    padding: '12px 6px',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: 3,
+                    gap: 4,
                     cursor: 'pointer',
                     color: '#38BDF8',
+                    boxShadow: '0 4px 15px rgba(56, 189, 248, 0.15)',
                   }}
                 >
-                  <span style={{ fontSize: 16 }}>🤖</span>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.66rem', fontWeight: 600 }}>AI Co-Pilot</span>
-                  <span style={{ fontSize: '0.56rem', color: 'rgba(56, 189, 248, 0.7)' }}>Online</span>
+                  <span style={{ fontSize: 20 }}>🤖</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.68rem', fontWeight: 700 }}>AI Co-Pilot</span>
+                  <span style={{ fontSize: '0.56rem', color: '#38BDF8', background: 'rgba(56, 189, 248, 0.15)', padding: '1px 5px', borderRadius: 4 }}>Online</span>
                 </motion.button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Divider */}
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 4px 10px' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', margin: '4px 2px 10px' }} />
 
             {/* React Bits LineSidebar Navigation */}
-            <div style={{ padding: '4px 16px 12px' }}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              style={{ padding: '2px 12px 12px' }}
+            >
               <LineSidebar
                 items={LINKS.map(l => l.label)}
                 accentColor="#818cf8"
-                textColor="rgba(255,255,255,0.7)"
-                markerColor="rgba(255,255,255,0.2)"
+                textColor="rgba(255,255,255,0.85)"
+                markerColor="rgba(255,255,255,0.3)"
                 showIndex={true}
                 showMarker={true}
                 proximityRadius={90}
@@ -309,7 +343,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
                 tickScale={0.5}
                 scaleTick={true}
                 itemGap={14}
-                fontSize={0.95}
+                fontSize={0.98}
                 smoothing={80}
                 onItemClick={(index: number) => {
                   const targetLink = LINKS[index];
@@ -322,33 +356,50 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
                   }
                 }}
               />
-            </div>
+            </motion.div>
 
             {/* Divider */}
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '10px 4px' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', margin: '10px 2px' }} />
 
             {/* Resume + Social Pills */}
-            <div style={{ padding: '4px 4px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              style={{ padding: '2px 2px', display: 'flex', flexDirection: 'column', gap: 10 }}
+            >
               <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                <a href="https://github.com/VishalDeep1377" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--mono)', fontSize: '.65rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', padding: '4px 10px', borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>GitHub ↗</a>
-                <a href="https://www.linkedin.com/in/vishal-deep-14a864255/" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--mono)', fontSize: '.65rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', padding: '4px 10px', borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>LinkedIn ↗</a>
+                <a href="https://github.com/VishalDeep1377" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--mono)', fontSize: '.68rem', color: '#ffffff', textDecoration: 'none', padding: '6px 14px', borderRadius: 100, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>GitHub ↗</a>
+                <a href="https://www.linkedin.com/in/vishal-deep-14a864255/" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--mono)', fontSize: '.68rem', color: '#ffffff', textDecoration: 'none', padding: '6px 14px', borderRadius: 100, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>LinkedIn ↗</a>
               </div>
 
               <motion.a
                 href="/vishal_resume.pdf" download
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
                 style={{
+                  position: 'relative',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  padding: '12px 24px', borderRadius: 14,
-                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                  color: '#fff', fontFamily: 'var(--sans)', fontSize: '.88rem', fontWeight: 700,
+                  padding: '13px 24px', borderRadius: 16,
+                  background: 'linear-gradient(135deg, #6366F1, #8B5CF6, #EC4899)',
+                  color: '#fff', fontFamily: 'var(--sans)', fontSize: '.92rem', fontWeight: 800,
                   textDecoration: 'none',
-                  boxShadow: '0 8px 28px rgba(99,102,241,0.45)',
+                  boxShadow: '0 8px 30px rgba(99, 102, 241, 0.5), inset 0 1px 1px rgba(255,255,255,0.3)',
+                  overflow: 'hidden',
                 }}
               >
-                Download Resume ↗
+                <motion.span
+                  animate={{ x: ['-150%', '150%'] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: 'linear', repeatDelay: 1 }}
+                  style={{
+                    position: 'absolute', top: 0, bottom: 0, width: '40%',
+                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)',
+                    transform: 'skewX(-15deg)', pointerEvents: 'none',
+                  }}
+                />
+                Download Resume PDF ↗
               </motion.a>
-            </div>
+            </motion.div>
           </motion.div>
         </>
       )}
