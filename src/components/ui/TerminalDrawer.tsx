@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface HistoryItem {
@@ -23,6 +23,12 @@ export default function TerminalDrawer() {
     },
   ]);
 
+  useEffect(() => {
+    const handleCustomOpen = () => setIsOpen(true);
+    window.addEventListener('open-terminal', handleCustomOpen);
+    return () => window.removeEventListener('open-terminal', handleCustomOpen);
+  }, []);
+
   const handleCommand = (e: React.FormEvent) => {
     e.preventDefault();
     const cmd = input.trim().toLowerCase();
@@ -35,7 +41,7 @@ export default function TerminalDrawer() {
         outputNode = (
           <div>
             <p style={{ color: '#F43F5E', margin: '0 0 6px' }}>Available Commands:</p>
-            <ul style={{ margin: 0, paddingLeft: 18, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+            <ul style={{ margin: 0, paddingLeft: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
               <li><b style={{ color: '#38BDF8' }}>bio</b> — Display Vishal Deep executive summary</li>
               <li><b style={{ color: '#FF9900' }}>certs</b> — List verified certifications (AWS, Microsoft, Google)</li>
               <li><b style={{ color: '#10B981' }}>skills</b> — Inspect AI/ML & Full-Stack technical skills</li>
@@ -127,30 +133,41 @@ export default function TerminalDrawer() {
 
   return (
     <>
-      {/* CLI Launcher Button */}
+      {/* Desktop CLI Launcher Button (Hidden on Mobile) */}
       <button
         onClick={() => setIsOpen(true)}
+        className="desktop-terminal-btn"
         style={{
           position: 'fixed',
-          top: 20,
-          right: 20,
-          zIndex: 99,
-          background: 'rgba(10, 10, 24, 0.75)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          borderRadius: 8,
-          padding: '6px 12px',
+          bottom: 20,
+          left: 130,
+          zIndex: 9999,
+          background: 'rgba(10, 10, 24, 0.85)',
+          border: '1px solid rgba(16, 185, 129, 0.35)',
+          borderRadius: 100,
+          padding: '8px 14px',
           color: '#10B981',
           fontFamily: 'var(--mono)',
-          fontSize: '0.75rem',
+          fontSize: '0.72rem',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          backdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.5), 0 0 15px rgba(16, 185, 129, 0.15)',
         }}
       >
         <span>$ CLI</span>
       </button>
+
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          .desktop-terminal-btn {
+            display: none !important;
+          }
+        }
+      `}</style>
 
       <AnimatePresence>
         {isOpen && (
@@ -162,8 +179,11 @@ export default function TerminalDrawer() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              paddingLeft: 12,
+              paddingRight: 12,
               background: 'rgba(0, 0, 0, 0.75)',
               backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
             }}
             onClick={() => setIsOpen(false)}
           >
@@ -173,9 +193,10 @@ export default function TerminalDrawer() {
               exit={{ opacity: 0, scale: 0.95 }}
               onClick={e => e.stopPropagation()}
               style={{
-                width: 680,
-                maxWidth: '92vw',
-                height: 440,
+                width: 660,
+                maxWidth: '100%',
+                height: 420,
+                maxHeight: 'calc(100vh - 100px)',
                 background: '#070714',
                 border: '1px solid rgba(56, 189, 248, 0.3)',
                 borderRadius: 14,
@@ -189,7 +210,7 @@ export default function TerminalDrawer() {
               {/* Header */}
               <div
                 style={{
-                  padding: '10px 16px',
+                  padding: '10px 14px',
                   background: 'rgba(255, 255, 255, 0.04)',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                   display: 'flex',
@@ -201,38 +222,38 @@ export default function TerminalDrawer() {
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F59E0B', display: 'inline-block' }} />
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginLeft: 8 }}>vishal@neural-craft:~</span>
+                  <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', marginLeft: 6 }}>vishal@neural-craft:~</span>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: 16, padding: 4 }}
                 >
                   ✕
                 </button>
               </div>
 
               {/* Terminal Body */}
-              <div style={{ flex: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ flex: 1, padding: '14px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {history.map((item, idx) => (
                   <div key={idx}>
                     {item.command !== 'welcome' && (
-                      <p style={{ color: '#10B981', margin: '0 0 4px', fontSize: '0.85rem' }}>
+                      <p style={{ color: '#10B981', margin: '0 0 4px', fontSize: '0.8rem' }}>
                         vishal@neural-craft:~$ <span style={{ color: '#ffffff' }}>{item.command}</span>
                       </p>
                     )}
-                    <div style={{ fontSize: '0.82rem' }}>{item.output}</div>
+                    <div style={{ fontSize: '0.78rem' }}>{item.output}</div>
                   </div>
                 ))}
               </div>
 
               {/* Terminal Input */}
-              <form onSubmit={handleCommand} style={{ padding: '12px 16px', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: '#10B981', fontSize: '0.85rem' }}>vishal@neural-craft:~$</span>
+              <form onSubmit={handleCommand} style={{ padding: '10px 14px', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ color: '#10B981', fontSize: '0.8rem' }}>vishal@neural-craft:~$</span>
                 <input
                   type="text"
                   value={input}
                   onChange={e => setInput(e.target.value)}
-                  placeholder="type a command (e.g. help, bio, certs, skills)..."
+                  placeholder="type a command (e.g. help, bio, certs)..."
                   autoFocus
                   style={{
                     flex: 1,
@@ -240,7 +261,7 @@ export default function TerminalDrawer() {
                     border: 'none',
                     color: '#ffffff',
                     fontFamily: 'var(--mono)',
-                    fontSize: '0.85rem',
+                    fontSize: '0.8rem',
                     outline: 'none',
                   }}
                 />

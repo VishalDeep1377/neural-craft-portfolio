@@ -161,7 +161,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
             transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: 'fixed',
-              top: 88, // below navbar
+              top: 84,
               left: 16, right: 16,
               zIndex: 9998,
               borderRadius: 22,
@@ -171,6 +171,8 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
               boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 60px rgba(99,102,241,0.15)',
               overflow: 'hidden',
               padding: '8px 12px 20px',
+              maxHeight: 'calc(100vh - 100px)',
+              overflowY: 'auto',
             }}
           >
             {/* Shimmer top bar */}
@@ -190,7 +192,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '6px 12px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-              marginBottom: 8,
+              marginBottom: 10,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span className="dot-live" style={{ width: 5, height: 5 }} />
@@ -199,12 +201,99 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
                 </span>
               </div>
               <span style={{ fontFamily: 'var(--mono)', fontSize: '.6rem', color: '#6366f1', letterSpacing: '.1em', textTransform: 'uppercase' }}>
-                AI-Lab Navigation
+                AI-Lab Workstation
               </span>
             </div>
 
+            {/* ── AI-Lab Interactive Tools ── */}
+            <div style={{ margin: '4px 4px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ fontSize: '0.6rem', fontFamily: 'var(--mono)', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '.12em', paddingLeft: 4 }}>
+                Workstation Tools & AI
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                {/* Search Card */}
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    onClose();
+                    window.dispatchEvent(new Event('open-command-palette'));
+                  }}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: 12,
+                    padding: '10px 6px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 3,
+                    cursor: 'pointer',
+                    color: '#ffffff',
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>🔍</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.66rem', fontWeight: 600 }}>Search</span>
+                  <span style={{ fontSize: '0.56rem', color: 'rgba(255,255,255,0.4)' }}>Ctrl + K</span>
+                </motion.button>
+
+                {/* Terminal CLI Card */}
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    onClose();
+                    window.dispatchEvent(new Event('open-terminal'));
+                  }}
+                  style={{
+                    background: 'rgba(16, 185, 129, 0.08)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: 12,
+                    padding: '10px 6px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 3,
+                    cursor: 'pointer',
+                    color: '#10B981',
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>💻</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.66rem', fontWeight: 600 }}>CLI Terminal</span>
+                  <span style={{ fontSize: '0.56rem', color: 'rgba(16, 185, 129, 0.7)' }}>$ vishal</span>
+                </motion.button>
+
+                {/* Vishal-AI Co-Pilot Card */}
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    onClose();
+                    window.dispatchEvent(new Event('open-ai-chat'));
+                  }}
+                  style={{
+                    background: 'rgba(56, 189, 248, 0.08)',
+                    border: '1px solid rgba(56, 189, 248, 0.3)',
+                    borderRadius: 12,
+                    padding: '10px 6px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 3,
+                    cursor: 'pointer',
+                    color: '#38BDF8',
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>🤖</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.66rem', fontWeight: 600 }}>AI Co-Pilot</span>
+                  <span style={{ fontSize: '0.56rem', color: 'rgba(56, 189, 248, 0.7)' }}>Online</span>
+                </motion.button>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 4px 10px' }} />
+
             {/* React Bits LineSidebar Navigation */}
-            <div style={{ padding: '8px 16px 12px' }}>
+            <div style={{ padding: '4px 16px 12px' }}>
               <LineSidebar
                 items={LINKS.map(l => l.label)}
                 accentColor="#818cf8"
@@ -291,7 +380,6 @@ export default function Navbar() {
       setScrollPct(max > 0 ? (y / max) * 100 : 0);
       setIsVisible(y < lastScrollY.current || y < 80);
       lastScrollY.current = y;
-      // close drawer on scroll
       if (mobileOpen) setMobileOpen(false);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -400,31 +488,14 @@ export default function Navbar() {
                   }}>VD</span>
                 </motion.div>
 
-                {/* Name — hide on very small screens */}
-                {!isMobile && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 1.5, lineHeight: 1 }}>
-                    <span style={{
-                      fontFamily: 'var(--sans)', fontSize: '0.85rem', fontWeight: 700,
-                      letterSpacing: '-0.02em',
-                      background: 'linear-gradient(120deg, #f1f0ff, #c4b5fd)',
-                      WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                      whiteSpace: 'nowrap',
-                    }}>Vishal Deep</span>
-                    <span style={{
-                      fontFamily: 'var(--mono)', fontSize: '0.5rem', letterSpacing: '0.16em',
-                      textTransform: 'uppercase', color: 'rgba(167,139,250,0.7)', whiteSpace: 'nowrap',
-                    }}>Software · AI</span>
-                  </div>
-                )}
-                {/* Show name on mobile in compact form */}
-                {isMobile && (
-                  <span style={{
-                    fontFamily: 'var(--sans)', fontSize: '0.82rem', fontWeight: 700,
-                    background: 'linear-gradient(120deg, #f1f0ff, #c4b5fd)',
-                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                    whiteSpace: 'nowrap',
-                  }}>Vishal Deep</span>
-                )}
+                {/* Name */}
+                <span style={{
+                  fontFamily: 'var(--sans)', fontSize: '0.85rem', fontWeight: 700,
+                  letterSpacing: '-0.02em',
+                  background: 'linear-gradient(120deg, #f1f0ff, #c4b5fd)',
+                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                  whiteSpace: 'nowrap',
+                }}>Vishal Deep</span>
               </motion.a>
 
               {/* Desktop: separator + links + badges */}

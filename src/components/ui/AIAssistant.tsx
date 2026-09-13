@@ -65,6 +65,12 @@ export default function AIAssistant() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    const handleCustomOpen = () => setIsOpen(true);
+    window.addEventListener('open-ai-chat', handleCustomOpen);
+    return () => window.removeEventListener('open-ai-chat', handleCustomOpen);
+  }, []);
+
   const handleSend = (textToSend?: string) => {
     const query = textToSend || inputValue.trim();
     if (!query) return;
@@ -106,7 +112,7 @@ export default function AIAssistant() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 9999 }}>
+    <div style={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
       {/* ── Chat Window ── */}
       <AnimatePresence>
         {isOpen && (
@@ -119,23 +125,23 @@ export default function AIAssistant() {
               width: 360,
               maxWidth: 'calc(100vw - 32px)',
               height: 480,
-              maxHeight: 'calc(100vh - 100px)',
-              background: 'rgba(10, 10, 24, 0.92)',
+              maxHeight: 'calc(100vh - 110px)',
+              background: 'rgba(10, 10, 24, 0.94)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
               borderRadius: 20,
               border: '1px solid rgba(255, 255, 255, 0.12)',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15)',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.15)',
               display: 'flex',
               flexDirection: 'column',
               overflow: 'hidden',
-              marginBottom: 16,
+              marginBottom: 12,
             }}
           >
             {/* Header */}
             <div
               style={{
-                padding: '14px 18px',
+                padding: '12px 16px',
                 background: 'linear-gradient(90deg, rgba(56, 189, 248, 0.15) 0%, rgba(244, 63, 94, 0.15) 100%)',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                 display: 'flex',
@@ -159,8 +165,8 @@ export default function AIAssistant() {
                   🤖
                 </div>
                 <div>
-                  <h4 style={{ margin: 0, fontSize: '0.9rem', color: '#ffffff', fontWeight: 600 }}>Vishal-AI Co-Pilot</h4>
-                  <span style={{ fontSize: '0.7rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <h4 style={{ margin: 0, fontSize: '0.85rem', color: '#ffffff', fontWeight: 600 }}>Vishal-AI Co-Pilot</h4>
+                  <span style={{ fontSize: '0.68rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} /> Online & Ready
                   </span>
                 </div>
@@ -174,7 +180,7 @@ export default function AIAssistant() {
                   cursor: 'pointer',
                   fontSize: 18,
                   lineHeight: 1,
-                  padding: 4,
+                  padding: 6,
                 }}
               >
                 ✕
@@ -185,11 +191,11 @@ export default function AIAssistant() {
             <div
               style={{
                 flex: 1,
-                padding: '16px',
+                padding: '14px',
                 overflowY: 'auto',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 12,
+                gap: 10,
               }}
             >
               {messages.map(msg => (
@@ -197,7 +203,7 @@ export default function AIAssistant() {
                   key={msg.id}
                   style={{
                     alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                    maxWidth: '85%',
+                    maxWidth: '88%',
                   }}
                 >
                   <div
@@ -209,7 +215,7 @@ export default function AIAssistant() {
                           ? 'linear-gradient(135deg, #38BDF8, #0284C7)'
                           : 'rgba(255, 255, 255, 0.07)',
                       color: '#ffffff',
-                      fontSize: '0.85rem',
+                      fontSize: '0.82rem',
                       lineHeight: 1.5,
                       border: msg.sender === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
                     }}
@@ -224,7 +230,7 @@ export default function AIAssistant() {
                             target={link.href.startsWith('http') ? '_blank' : undefined}
                             rel="noopener noreferrer"
                             style={{
-                              fontSize: '0.75rem',
+                              fontSize: '0.72rem',
                               padding: '4px 10px',
                               borderRadius: 8,
                               background: 'rgba(56, 189, 248, 0.2)',
@@ -263,13 +269,22 @@ export default function AIAssistant() {
             </div>
 
             {/* Quick Chips */}
-            <div style={{ padding: '8px 12px', display: 'flex', gap: 6, overflowX: 'auto', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+            <div
+              style={{
+                padding: '8px 10px',
+                display: 'flex',
+                gap: 6,
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+              }}
+            >
               {PRESET_QUERIES.map(chip => (
                 <button
                   key={chip.label}
                   onClick={() => handleSend(chip.query)}
                   style={{
-                    fontSize: '0.7rem',
+                    fontSize: '0.68rem',
                     whiteSpace: 'nowrap',
                     padding: '4px 10px',
                     borderRadius: 100,
@@ -277,6 +292,7 @@ export default function AIAssistant() {
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     color: 'rgba(255, 255, 255, 0.8)',
                     cursor: 'pointer',
+                    flexShrink: 0,
                   }}
                 >
                   {chip.label}
@@ -291,25 +307,25 @@ export default function AIAssistant() {
                 handleSend();
               }}
               style={{
-                padding: '10px 12px',
+                padding: '8px 10px',
                 background: 'rgba(0, 0, 0, 0.4)',
                 display: 'flex',
-                gap: 8,
+                gap: 6,
               }}
             >
               <input
                 type="text"
                 value={inputValue}
                 onChange={e => setInputValue(e.target.value)}
-                placeholder="Ask about Vishal's background..."
+                placeholder="Ask about Vishal..."
                 style={{
                   flex: 1,
                   background: 'rgba(255, 255, 255, 0.06)',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: 10,
-                  padding: '8px 12px',
+                  padding: '8px 10px',
                   color: '#ffffff',
-                  fontSize: '0.82rem',
+                  fontSize: '0.8rem',
                   outline: 'none',
                 }}
               />
@@ -319,11 +335,12 @@ export default function AIAssistant() {
                   background: 'linear-gradient(135deg, #38BDF8, #0284C7)',
                   border: 'none',
                   borderRadius: 10,
-                  padding: '8px 14px',
+                  padding: '8px 12px',
                   color: '#ffffff',
                   fontWeight: 600,
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   cursor: 'pointer',
+                  flexShrink: 0,
                 }}
               >
                 Send
@@ -339,17 +356,17 @@ export default function AIAssistant() {
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         style={{
-          width: 54,
-          height: 54,
+          width: 50,
+          height: 50,
           borderRadius: '50%',
           background: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
           border: '1px solid rgba(255, 255, 255, 0.3)',
-          boxShadow: '0 8px 30px rgba(6, 182, 212, 0.4)',
+          boxShadow: '0 8px 25px rgba(6, 182, 212, 0.45)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 22,
+          fontSize: 20,
           position: 'relative',
           marginLeft: 'auto',
         }}
@@ -360,8 +377,8 @@ export default function AIAssistant() {
             position: 'absolute',
             top: 2,
             right: 2,
-            width: 12,
-            height: 12,
+            width: 10,
+            height: 10,
             borderRadius: '50%',
             background: '#10B981',
             border: '2px solid #080814',
