@@ -1,11 +1,10 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  output: 'export',
   images: {
-    domains: [],
-    unoptimized: false,
+    unoptimized: true,
   },
-  // Allow importing three.js and related packages
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
 };
 
