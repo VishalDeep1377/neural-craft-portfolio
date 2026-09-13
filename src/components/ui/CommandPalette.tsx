@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CommandItem {
   id: string;
   icon: string;
   title: string;
+  description: string;
   category: 'Navigation' | 'Actions' | 'Social';
   shortcut?: string;
   perform: () => void;
@@ -15,34 +16,17 @@ interface CommandItem {
 export default function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setIsOpen(prev => !prev);
-      }
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleCustomOpen = () => setIsOpen(true);
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('open-command-palette', handleCustomOpen);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('open-command-palette', handleCustomOpen);
-    };
-  }, [isOpen]);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const commands: CommandItem[] = [
     {
       id: 'projects',
       icon: '🚀',
       title: 'Go to Featured Projects',
+      description: 'Explore full-stack AI workstations & live demos',
       category: 'Navigation',
       shortcut: '↵',
       perform: () => {
@@ -54,6 +38,7 @@ export default function CommandPalette() {
       id: 'certifications',
       icon: '📜',
       title: 'Go to Verified Certifications',
+      description: 'AWS, Microsoft, and Google Cloud credentials',
       category: 'Navigation',
       perform: () => {
         window.location.hash = '#certifications';
@@ -64,6 +49,7 @@ export default function CommandPalette() {
       id: 'skills',
       icon: '🛠️',
       title: 'Go to Skills & Tech Stack',
+      description: 'Inspect PyTorch, Bedrock, React 19 & Next.js stack',
       category: 'Navigation',
       perform: () => {
         window.location.hash = '#skills';
@@ -71,9 +57,21 @@ export default function CommandPalette() {
       },
     },
     {
+      id: 'experience',
+      icon: '💼',
+      title: 'Go to Work Experience',
+      description: 'Software engineering roles & hackathon achievements',
+      category: 'Navigation',
+      perform: () => {
+        window.location.hash = '#experience';
+        setIsOpen(false);
+      },
+    },
+    {
       id: 'contact',
       icon: '📬',
       title: 'Go to Contact Section',
+      description: 'Send direct messages or job inquiries',
       category: 'Navigation',
       perform: () => {
         window.location.hash = '#contact';
@@ -81,11 +79,36 @@ export default function CommandPalette() {
       },
     },
     {
+      id: 'terminal',
+      icon: '💻',
+      title: 'Launch CLI Terminal Drawer',
+      description: 'Open retro cyberpunk workstation command prompt',
+      category: 'Actions',
+      shortcut: '$ CLI',
+      perform: () => {
+        setIsOpen(false);
+        setTimeout(() => window.dispatchEvent(new Event('open-terminal')), 100);
+      },
+    },
+    {
+      id: 'ai-copilot',
+      icon: '🤖',
+      title: 'Launch Vishal-AI Co-Pilot',
+      description: 'Chat with AI assistant about skills & background',
+      category: 'Actions',
+      shortcut: 'AI Chat',
+      perform: () => {
+        setIsOpen(false);
+        setTimeout(() => window.dispatchEvent(new Event('open-ai-chat')), 100);
+      },
+    },
+    {
       id: 'resume',
       icon: '📄',
       title: 'Download Resume PDF',
+      description: 'Get verified PDF copy of Vishal Deep resume',
       category: 'Actions',
-      shortcut: 'Download',
+      shortcut: 'PDF',
       perform: () => {
         const link = document.createElement('a');
         link.href = '/vishal_resume.pdf';
@@ -97,7 +120,8 @@ export default function CommandPalette() {
     {
       id: 'copy-email',
       icon: '✉️',
-      title: 'Copy Email (vishalyep1022@gmail.com)',
+      title: 'Copy Direct Email',
+      description: 'vishalyep1022@gmail.com',
       category: 'Actions',
       perform: () => {
         navigator.clipboard.writeText('vishalyep1022@gmail.com');
@@ -109,6 +133,7 @@ export default function CommandPalette() {
       id: 'github',
       icon: '🐙',
       title: 'Open GitHub Profile',
+      description: 'github.com/VishalDeep1377',
       category: 'Social',
       perform: () => {
         window.open('https://github.com/VishalDeep1377', '_blank');
@@ -119,6 +144,7 @@ export default function CommandPalette() {
       id: 'linkedin',
       icon: '💼',
       title: 'Open LinkedIn Profile',
+      description: 'linkedin.com/in/vishal-deep',
       category: 'Social',
       perform: () => {
         window.open('https://www.linkedin.com/in/vishal-deep-14a864255/', '_blank');
@@ -127,50 +153,56 @@ export default function CommandPalette() {
     },
   ];
 
-  const filteredCommands = commands.filter(c =>
-    c.title.toLowerCase().includes(search.toLowerCase()) ||
-    c.category.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCommands = commands.filter(c => {
+    const matchesCategory = activeCategory === 'All' || c.category === activeCategory;
+    const matchesQuery =
+      c.title.toLowerCase().includes(search.toLowerCase()) ||
+      c.description.toLowerCase().includes(search.toLowerCase()) ||
+      c.category.toLowerCase().includes(search.toLowerCase());
+    return matchesCategory && matchesQuery;
+  });
+
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [search, activeCategory]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsOpen(prev => !prev);
+      }
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+
+      if (isOpen && filteredCommands.length > 0) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setSelectedIndex(prev => (prev < filteredCommands.length - 1 ? prev + 1 : 0));
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setSelectedIndex(prev => (prev > 0 ? prev - 1 : filteredCommands.length - 1));
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          const target = filteredCommands[selectedIndex];
+          if (target) target.perform();
+        }
+      }
+    };
+
+    const handleCustomOpen = () => setIsOpen(true);
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('open-command-palette', handleCustomOpen);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('open-command-palette', handleCustomOpen);
+    };
+  }, [isOpen, filteredCommands, selectedIndex]);
 
   return (
     <>
-      {/* Desktop Floating Trigger (Hidden on Mobile) */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="desktop-workstation-btn"
-        style={{
-          position: 'fixed',
-          bottom: 20,
-          left: 20,
-          zIndex: 9999,
-          background: 'rgba(10, 10, 24, 0.85)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          borderRadius: 100,
-          padding: '8px 14px',
-          color: 'rgba(255, 255, 255, 0.85)',
-          fontFamily: 'var(--mono)',
-          fontSize: '0.72rem',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-        }}
-      >
-        <span>🔍 Search</span>
-        <kbd style={{ background: 'rgba(255,255,255,0.12)', padding: '2px 5px', borderRadius: 4, fontSize: '0.62rem' }}>Ctrl K</kbd>
-      </button>
-
-      <style jsx global>{`
-        @media (max-width: 768px) {
-          .desktop-workstation-btn {
-            display: none !important;
-          }
-        }
-      `}</style>
-
       <AnimatePresence>
         {isOpen && (
           <div
@@ -181,141 +213,192 @@ export default function CommandPalette() {
               display: 'flex',
               alignItems: 'flex-start',
               justifyContent: 'center',
-              paddingTop: '10vh',
+              paddingTop: '8vh',
               paddingLeft: 12,
               paddingRight: 12,
-              background: 'rgba(0, 0, 0, 0.75)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
+              background: 'rgba(3, 4, 14, 0.85)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
             }}
             onClick={() => setIsOpen(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              initial={{ opacity: 0, scale: 0.94, y: -12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, scale: 0.94, y: -12 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
               onClick={e => e.stopPropagation()}
               style={{
-                width: 580,
+                width: 640,
                 maxWidth: '100%',
-                maxHeight: 'calc(100vh - 120px)',
-                background: 'rgba(12, 12, 28, 0.96)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: 16,
-                boxShadow: '0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(56, 189, 248, 0.15)',
+                maxHeight: 'calc(100vh - 100px)',
+                background: 'linear-gradient(165deg, rgba(14, 16, 32, 0.98) 0%, rgba(8, 9, 22, 0.99) 100%)',
+                border: '1px solid rgba(99, 102, 241, 0.3)',
+                borderRadius: 20,
+                boxShadow: '0 30px 90px rgba(0, 0, 0, 0.95), 0 0 50px rgba(99, 102, 241, 0.25)',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
-              {/* Search Bar */}
+              {/* Shimmer top bar */}
+              <motion.div
+                initial={{ backgroundPosition: '0% 0%' }}
+                animate={{ backgroundPosition: '200% 0%' }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                style={{
+                  height: 3,
+                  backgroundImage: 'linear-gradient(90deg, #38BDF8, #6366F1, #EC4899, #10B981, #38BDF8)',
+                  backgroundSize: '200% 100%',
+                }}
+              />
+
+              {/* Search Bar Input */}
               <div
                 style={{
-                  padding: '14px 16px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                  padding: '14px 18px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 10,
+                  gap: 12,
                 }}
               >
-                <span style={{ fontSize: 16 }}>🔍</span>
+                <span style={{ fontSize: 18, color: '#6366F1' }}>🔍</span>
                 <input
                   type="text"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  placeholder="Type a command or search..."
+                  placeholder="Type a command or search sections..."
                   autoFocus
                   style={{
                     flex: 1,
                     background: 'none',
                     border: 'none',
                     color: '#ffffff',
-                    fontSize: '0.9rem',
+                    fontSize: '0.96rem',
                     outline: 'none',
                     fontFamily: 'var(--sans)',
+                    fontWeight: 500,
                   }}
                 />
                 <button
                   onClick={() => setIsOpen(false)}
                   style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'rgba(255, 255, 255, 0.5)',
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: 8,
+                    color: 'rgba(255, 255, 255, 0.6)',
                     cursor: 'pointer',
-                    fontSize: 16,
-                    padding: 4,
+                    fontSize: 12,
+                    padding: '4px 8px',
+                    fontFamily: 'var(--mono)',
                   }}
                 >
-                  ✕
+                  ESC
                 </button>
               </div>
 
-              {/* Toast Message */}
+              {/* Category Filter Pills */}
+              <div style={{ padding: '8px 16px', display: 'flex', gap: 6, background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                {['All', 'Navigation', 'Actions', 'Social'].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    style={{
+                      background: activeCategory === cat ? 'linear-gradient(135deg, #6366F1, #8B5CF6)' : 'rgba(255,255,255,0.05)',
+                      border: activeCategory === cat ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: 100,
+                      padding: '4px 12px',
+                      color: activeCategory === cat ? '#ffffff' : 'rgba(255,255,255,0.6)',
+                      fontSize: '0.68rem',
+                      fontFamily: 'var(--mono)',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Toast Notification */}
               {copied && (
-                <div style={{ padding: '8px 16px', background: 'rgba(16, 185, 129, 0.2)', color: '#10B981', fontSize: '0.78rem' }}>
+                <div style={{ padding: '8px 16px', background: 'rgba(16, 185, 129, 0.2)', color: '#10B981', fontSize: '0.78rem', fontFamily: 'var(--mono)', borderBottom: '1px solid rgba(16, 185, 129, 0.3)' }}>
                   ✓ Email copied to clipboard!
                 </div>
               )}
 
               {/* Command List */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+              <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: '8px 0', maxHeight: 360 }}>
                 {filteredCommands.length === 0 ? (
-                  <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.4)', fontSize: '0.85rem' }}>
-                    No commands matching "{search}"
+                  <div style={{ padding: '30px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.4)', fontSize: '0.85rem' }}>
+                    No results matching "{search}"
                   </div>
                 ) : (
-                  filteredCommands.map(cmd => (
-                    <div
-                      key={cmd.id}
-                      onClick={cmd.perform}
-                      style={{
-                        padding: '10px 16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        cursor: 'pointer',
-                        transition: 'background 0.15s ease',
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.07)';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = 'transparent';
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontSize: 16 }}>{cmd.icon}</span>
-                        <div>
-                          <span style={{ fontSize: '0.85rem', color: '#ffffff', fontWeight: 500, display: 'block' }}>{cmd.title}</span>
-                          <span style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.4)' }}>{cmd.category}</span>
+                  filteredCommands.map((cmd, idx) => {
+                    const isSelected = idx === selectedIndex;
+                    return (
+                      <div
+                        key={cmd.id}
+                        onClick={cmd.perform}
+                        onMouseEnter={() => setSelectedIndex(idx)}
+                        style={{
+                          padding: '10px 18px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          cursor: 'pointer',
+                          background: isSelected ? 'linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.1))' : 'transparent',
+                          borderLeft: isSelected ? '3px solid #6366F1' : '3px solid transparent',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <span style={{ fontSize: 18, filter: isSelected ? 'drop-shadow(0 0 8px rgba(99,102,241,0.8))' : 'none' }}>
+                            {cmd.icon}
+                          </span>
+                          <div>
+                            <span style={{ fontSize: '0.88rem', color: isSelected ? '#ffffff' : 'rgba(255,255,255,0.85)', fontWeight: isSelected ? 700 : 500, display: 'block' }}>
+                              {cmd.title}
+                            </span>
+                            <span style={{ fontSize: '0.70rem', color: 'rgba(255, 255, 255, 0.45)' }}>
+                              {cmd.description}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontSize: '0.62rem', color: 'rgba(99, 102, 241, 0.9)', background: 'rgba(99, 102, 241, 0.12)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '2px 6px', borderRadius: 4, fontFamily: 'var(--mono)', textTransform: 'uppercase' }}>
+                            {cmd.category}
+                          </span>
+                          {cmd.shortcut && (
+                            <kbd style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', padding: '2px 7px', borderRadius: 4, fontSize: '0.65rem', color: '#ffffff', fontFamily: 'var(--mono)' }}>
+                              {cmd.shortcut}
+                            </kbd>
+                          )}
                         </div>
                       </div>
-                      {cmd.shortcut && (
-                        <kbd style={{ background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: 4, fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)' }}>
-                          {cmd.shortcut}
-                        </kbd>
-                      )}
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
 
-              {/* Footer */}
+              {/* Footer status bar */}
               <div
                 style={{
-                  padding: '8px 16px',
-                  background: 'rgba(0, 0, 0, 0.3)',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                  padding: '8px 18px',
+                  background: 'rgba(5, 7, 20, 0.95)',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                   display: 'flex',
-                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  fontSize: '0.7rem',
+                  justifyContent: 'space-between',
+                  fontSize: '0.68rem',
                   color: 'rgba(255, 255, 255, 0.4)',
+                  fontFamily: 'var(--mono)',
                 }}
               >
-                <span>Navigate with touch or keyboard</span>
-                <span>Neural-Craft v2.0</span>
+                <span>Use <strong style={{ color: '#38BDF8' }}>↑ ↓</strong> to navigate • <strong style={{ color: '#38BDF8' }}>↵</strong> to select</span>
+                <span style={{ color: '#6366F1' }}>Neural-Craft Spotlight v3.0</span>
               </div>
             </motion.div>
           </div>
