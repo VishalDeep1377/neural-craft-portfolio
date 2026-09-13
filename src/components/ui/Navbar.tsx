@@ -449,7 +449,7 @@ export default function Navbar() {
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: 'fixed', top: 18, left: '50%', zIndex: 9999,
-              width: 'min(1180px, calc(100vw - 32px))',
+              width: 'min(1240px, calc(100vw - 32px))',
             }}
           >
             {/* Outer glow */}
@@ -564,6 +564,52 @@ export default function Navbar() {
                     {LINKS.map((link, i) => <MagneticLink key={link.href} {...link} index={i} />)}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12, flexShrink: 0 }}>
+                    {/* Desktop Search Button */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => window.dispatchEvent(new Event('open-command-palette'))}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        borderRadius: 100,
+                        padding: '6px 12px',
+                        color: 'rgba(255, 255, 255, 0.85)',
+                        fontFamily: 'var(--mono)',
+                        fontSize: '0.70rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                      }}
+                    >
+                      <span>🔍 Search</span>
+                      <kbd style={{ background: 'rgba(255,255,255,0.12)', padding: '2px 5px', borderRadius: 4, fontSize: '0.60rem' }}>Ctrl K</kbd>
+                    </motion.button>
+
+                    {/* Desktop Terminal Button */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => window.dispatchEvent(new Event('open-terminal'))}
+                      style={{
+                        background: 'rgba(16, 185, 129, 0.10)',
+                        border: '1px solid rgba(16, 185, 129, 0.3)',
+                        borderRadius: 100,
+                        padding: '6px 12px',
+                        color: '#10B981',
+                        fontFamily: 'var(--mono)',
+                        fontSize: '0.70rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        boxShadow: '0 0 12px rgba(16, 185, 129, 0.15)',
+                      }}
+                    >
+                      <span>💻 CLI</span>
+                    </motion.button>
+
                     {/* Open to work badge */}
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
@@ -584,6 +630,7 @@ export default function Navbar() {
                         letterSpacing: '0.06em', whiteSpace: 'nowrap',
                       }}>Open to work</span>
                     </motion.div>
+
                     {/* Resume CTA */}
                     <motion.a
                       href="/vishal_resume.pdf" download
