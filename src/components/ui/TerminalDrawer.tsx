@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface HistoryItem {
@@ -8,20 +8,52 @@ interface HistoryItem {
   output: React.ReactNode;
 }
 
+const ASCII_BANNER = `
+  _   _ _____ _   _ ____    _    _       _    ___ 
+ | | | | ____| | | |  _ \\  / \\  | |     / \\  |_ _|
+ | | | |  _| | | | | |_) |/ _ \\ | |    / _ \\  | | 
+ | |_| | |___| |_| |  _ </ ___ \\| |___/ ___ \\ | | 
+  \\___/|_____|\\___/|_| \\_\\_/   \\_\\_____/_/   \\_\\___|
+`;
+
+const QUICK_COMMANDS = [
+  { label: '⚡ bio', cmd: 'bio' },
+  { label: '📜 certs', cmd: 'certs' },
+  { label: '🛠️ skills', cmd: 'skills' },
+  { label: '🚀 projects', cmd: 'projects' },
+  { label: '📬 contact', cmd: 'contact' },
+  { label: '🧹 clear', cmd: 'clear' },
+];
+
 export default function TerminalDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+
   const [history, setHistory] = useState<HistoryItem[]>([
     {
       command: 'welcome',
       output: (
-        <div>
-          <p style={{ color: '#38BDF8', margin: 0, fontWeight: 600 }}>Welcome to Neural-Craft Workstation CLI v2.0</p>
-          <p style={{ color: 'rgba(255,255,255,0.7)', margin: '4px 0 0' }}>Type <code style={{ color: '#F43F5E' }}>help</code> to list available commands.</p>
+        <div style={{ fontFamily: 'var(--mono)' }}>
+          <pre style={{ color: '#38BDF8', fontSize: '0.65rem', margin: '0 0 10px', lineHeight: 1.25, fontWeight: 700 }}>
+            {ASCII_BANNER}
+          </pre>
+          <div style={{ display: 'inline-block', background: 'rgba(56, 189, 248, 0.15)', border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: 6, padding: '4px 10px', color: '#38BDF8', fontSize: '0.75rem', fontWeight: 600, marginBottom: 8 }}>
+            Neural-Craft Workstation CLI v3.0 (Pro Cyberpunk Edition)
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.7)', margin: '4px 0 0', fontSize: '0.78rem' }}>
+            Type <code style={{ color: '#F43F5E', background: 'rgba(244, 63, 94, 0.15)', padding: '1px 6px', borderRadius: 4 }}>help</code> or tap any command chip below to execute.
+          </p>
         </div>
       ),
     },
   ]);
+
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [history]);
 
   useEffect(() => {
     const handleCustomOpen = () => setIsOpen(true);
@@ -29,51 +61,83 @@ export default function TerminalDrawer() {
     return () => window.removeEventListener('open-terminal', handleCustomOpen);
   }, []);
 
-  const handleCommand = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cmd = input.trim().toLowerCase();
+  const executeCommandString = (commandStr: string) => {
+    const cmd = commandStr.trim().toLowerCase();
     if (!cmd) return;
+
+    // Add to command history list for ArrowUp/ArrowDown navigation
+    setCommandHistory(prev => [...prev, cmd]);
+    setHistoryIndex(-1);
 
     let outputNode: React.ReactNode = null;
 
     switch (cmd) {
       case 'help':
         outputNode = (
-          <div>
-            <p style={{ color: '#F43F5E', margin: '0 0 6px' }}>Available Commands:</p>
-            <ul style={{ margin: 0, paddingLeft: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
-              <li><b style={{ color: '#38BDF8' }}>bio</b> — Display Vishal Deep executive summary</li>
-              <li><b style={{ color: '#FF9900' }}>certs</b> — List verified certifications (AWS, Microsoft, Google)</li>
-              <li><b style={{ color: '#10B981' }}>skills</b> — Inspect AI/ML & Full-Stack technical skills</li>
-              <li><b style={{ color: '#EC4899' }}>projects</b> — View featured engineering projects</li>
-              <li><b style={{ color: '#A855F7' }}>contact</b> — Print direct contact channels</li>
-              <li><b style={{ color: '#64748B' }}>clear</b> — Clear terminal screen</li>
-            </ul>
+          <div style={{ padding: '4px 0' }}>
+            <p style={{ color: '#F43F5E', margin: '0 0 8px', fontWeight: 700, fontSize: '0.8rem' }}>Available CLI Commands:</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8 }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <b style={{ color: '#38BDF8' }}>bio</b>
+                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)' }}>Executive summary & background</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <b style={{ color: '#FF9900' }}>certs</b>
+                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)' }}>AWS, Microsoft & Google credentials</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <b style={{ color: '#10B981' }}>skills</b>
+                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)' }}>AI/ML & Full-Stack technical stack</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <b style={{ color: '#EC4899' }}>projects</b>
+                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)' }}>Featured production systems</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <b style={{ color: '#A855F7' }}>contact</b>
+                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)' }}>Direct contact channels</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <b style={{ color: '#64748B' }}>clear</b>
+                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)' }}>Clear terminal screen</p>
+              </div>
+            </div>
           </div>
         );
         break;
 
       case 'bio':
         outputNode = (
-          <div style={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
-            <p style={{ color: '#38BDF8', fontWeight: 600, margin: 0 }}>Vishal Deep — Software Engineer & AI Specialist</p>
-            <p style={{ margin: '4px 0 0' }}>MCA candidate in Generative AI at SRM University. Specialist in LLMs, Bedrock, Vertex AI, Agentic Autonomous AI, and React 19 / Next.js 16 full-stack systems.</p>
+          <div style={{ background: 'rgba(56, 189, 248, 0.05)', borderLeft: '3px solid #38BDF8', padding: '10px 14px', borderRadius: '0 8px 8px 0' }}>
+            <h4 style={{ color: '#38BDF8', margin: '0 0 4px', fontWeight: 700, fontSize: '0.88rem' }}>Vishal Deep — Software Engineer & AI Specialist</h4>
+            <p style={{ margin: 0, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, fontSize: '0.78rem' }}>
+              MCA candidate in Generative AI at SRM University. Specialist in LLMs, AWS Bedrock, Vertex AI, Agentic Autonomous Workflows, Next.js 16, React 19, and scalable full-stack engineering. Winner at DOMINION 2026 and SRMIST x NITROSTACK Hackathon.
+            </p>
           </div>
         );
         break;
 
       case 'certs':
         outputNode = (
-          <div>
-            <p style={{ color: '#FF9900', margin: '0 0 6px', fontWeight: 600 }}>Verified Credentials:</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, color: 'rgba(255,255,255,0.85)' }}>
-              <span>• [AWS] Large Language Models & Generative AI</span>
-              <span>• [Microsoft] AI & ML Engineering Specialization</span>
-              <span>• [Google Cloud] Generative AI Leader Professional Certificate</span>
-              <span>• [DeepLearning.AI] Advance Deep Learning Specialization</span>
-              <span>• [Vanderbilt Univ] Agentic AI & AI Agents for Leaders</span>
-              <span>• [Dominion 2026] Best Design Award</span>
-              <span>• [SRMIST] NITROSTACK Hackathon Runner Up</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <p style={{ color: '#FF9900', margin: 0, fontWeight: 700, fontSize: '0.8rem' }}>Verified Credentials & Certifications:</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 8 }}>
+              <div style={{ background: 'rgba(255,153,0,0.08)', border: '1px solid rgba(255,153,0,0.25)', padding: '8px 12px', borderRadius: 8 }}>
+                <span style={{ fontSize: '0.72rem', color: '#FF9900', fontWeight: 700 }}>AWS</span>
+                <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#ffffff' }}>LLMs & Generative AI</p>
+              </div>
+              <div style={{ background: 'rgba(0,164,239,0.08)', border: '1px solid rgba(0,164,239,0.25)', padding: '8px 12px', borderRadius: 8 }}>
+                <span style={{ fontSize: '0.72rem', color: '#00A4EF', fontWeight: 700 }}>Microsoft</span>
+                <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#ffffff' }}>AI & ML Engineering</p>
+              </div>
+              <div style={{ background: 'rgba(66,133,244,0.08)', border: '1px solid rgba(66,133,244,0.25)', padding: '8px 12px', borderRadius: 8 }}>
+                <span style={{ fontSize: '0.72rem', color: '#4285F4', fontWeight: 700 }}>Google Cloud</span>
+                <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#ffffff' }}>Generative AI Leader</p>
+              </div>
+              <div style={{ background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.25)', padding: '8px 12px', borderRadius: 8 }}>
+                <span style={{ fontSize: '0.72rem', color: '#A855F7', fontWeight: 700 }}>DeepLearning.AI</span>
+                <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#ffffff' }}>Advance Deep Learning</p>
+              </div>
             </div>
           </div>
         );
@@ -81,23 +145,49 @@ export default function TerminalDrawer() {
 
       case 'skills':
         outputNode = (
-          <div>
-            <p style={{ color: '#10B981', margin: '0 0 4px', fontWeight: 600 }}>AI / ML Core:</p>
-            <p style={{ margin: '0 0 8px', color: 'rgba(255,255,255,0.8)' }}>PyTorch, AWS Bedrock, SageMaker, Vertex AI, Agentic AI, Prompt Engineering, Neural Networks</p>
-            <p style={{ color: '#38BDF8', margin: '0 0 4px', fontWeight: 600 }}>Full-Stack Core:</p>
-            <p style={{ margin: 0, color: 'rgba(255,255,255,0.8)' }}>Next.js 16, React 19, TypeScript, WebGL (OGL), TailwindCSS, Node.js, REST APIs, Git</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div>
+              <p style={{ color: '#10B981', margin: '0 0 6px', fontWeight: 700, fontSize: '0.78rem' }}>🧠 AI / ML Stack:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {['PyTorch', 'AWS Bedrock', 'SageMaker', 'Vertex AI', 'Agentic AI', 'Prompt Engineering', 'LangChain', 'OpenAI API'].map(s => (
+                  <span key={s} style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10B981', padding: '3px 8px', borderRadius: 6, fontSize: '0.70rem' }}>
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p style={{ color: '#38BDF8', margin: '0 0 6px', fontWeight: 700, fontSize: '0.78rem' }}>💻 Full-Stack Architecture:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {['Next.js 16', 'React 19', 'TypeScript', 'WebGL (OGL)', 'TailwindCSS', 'Node.js', 'REST & GraphQL', 'Git'].map(s => (
+                  <span key={s} style={{ background: 'rgba(56, 189, 248, 0.12)', border: '1px solid rgba(56, 189, 248, 0.3)', color: '#38BDF8', padding: '3px 8px', borderRadius: 6, fontSize: '0.70rem' }}>
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         );
         break;
 
       case 'projects':
         outputNode = (
-          <div>
-            <p style={{ color: '#EC4899', margin: '0 0 6px', fontWeight: 600 }}>Featured Projects:</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, color: 'rgba(255,255,255,0.85)' }}>
-              <span>1. <b>Neural-Craft Portfolio Workstation</b> — WebGL & Canvas AI portfolio platform</span>
-              <span>2. <b>Agentic AI Pipeline</b> — Multi-agent autonomous workflow engine</span>
-              <span>3. <b>Speech Analytics Platform</b> — Real-time audio evaluation module</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <p style={{ color: '#EC4899', margin: 0, fontWeight: 700, fontSize: '0.78rem' }}>🚀 Featured Engineering Projects:</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', padding: '8px 12px', borderRadius: 8 }}>
+                <span style={{ color: '#EC4899', fontWeight: 700, fontSize: '0.8rem' }}>1. Neural-Craft Portfolio Workstation</span>
+                <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.7)', fontSize: '0.74rem' }}>Next.js 16 + WebGL + Custom AI Co-Pilot & CLI Terminal interface</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', padding: '8px 12px', borderRadius: 8 }}>
+                <span style={{ color: '#38BDF8', fontWeight: 700, fontSize: '0.8rem' }}>2. Agentic Autonomous AI Pipeline</span>
+                <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.7)', fontSize: '0.74rem' }}>Multi-agent workflow orchestration engine built on AWS Bedrock & PyTorch</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', padding: '8px 12px', borderRadius: 8 }}>
+                <span style={{ color: '#10B981', fontWeight: 700, fontSize: '0.8rem' }}>3. Real-Time Speech Analytics Engine</span>
+                <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.7)', fontSize: '0.74rem' }}>Continuous audio evaluation & transcription analysis module</p>
+              </div>
             </div>
           </div>
         );
@@ -105,10 +195,13 @@ export default function TerminalDrawer() {
 
       case 'contact':
         outputNode = (
-          <div style={{ color: 'rgba(255,255,255,0.85)' }}>
-            <p style={{ margin: 0 }}>✉️ Email: <a href="mailto:vishalyep1022@gmail.com" style={{ color: '#38BDF8' }}>vishalyep1022@gmail.com</a></p>
-            <p style={{ margin: '4px 0 0' }}>🐙 GitHub: <a href="https://github.com/VishalDeep1377" target="_blank" style={{ color: '#38BDF8' }}>github.com/VishalDeep1377</a></p>
-            <p style={{ margin: '4px 0 0' }}>💼 LinkedIn: <a href="https://www.linkedin.com/in/vishal-deep-14a864255/" target="_blank" style={{ color: '#38BDF8' }}>linkedin.com/in/vishal-deep</a></p>
+          <div style={{ background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.25)', padding: '10px 14px', borderRadius: 10 }}>
+            <p style={{ color: '#A855F7', margin: '0 0 6px', fontWeight: 700, fontSize: '0.8rem' }}>📬 Direct Contact Channels:</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: '0.78rem' }}>
+              <span>✉️ Email: <a href="mailto:vishalyep1022@gmail.com" style={{ color: '#38BDF8', textDecoration: 'underline' }}>vishalyep1022@gmail.com</a></span>
+              <span>🐙 GitHub: <a href="https://github.com/VishalDeep1377" target="_blank" rel="noopener noreferrer" style={{ color: '#38BDF8', textDecoration: 'underline' }}>github.com/VishalDeep1377</a></span>
+              <span>💼 LinkedIn: <a href="https://www.linkedin.com/in/vishal-deep-14a864255/" target="_blank" rel="noopener noreferrer" style={{ color: '#38BDF8', textDecoration: 'underline' }}>linkedin.com/in/vishal-deep</a></span>
+            </div>
           </div>
         );
         break;
@@ -120,55 +213,39 @@ export default function TerminalDrawer() {
 
       default:
         outputNode = (
-          <p style={{ color: '#EF4444', margin: 0 }}>
-            Command not recognized: "{cmd}". Type <code style={{ color: '#38BDF8' }}>help</code> for available commands.
+          <p style={{ color: '#EF4444', margin: 0, fontSize: '0.78rem' }}>
+            Command not recognized: "{cmd}". Type <code style={{ color: '#38BDF8', background: 'rgba(56,189,248,0.15)', padding: '1px 5px', borderRadius: 4 }}>help</code> for available commands.
           </p>
         );
         break;
     }
 
-    setHistory(prev => [...prev, { command: input, output: outputNode }]);
+    setHistory(prev => [...prev, { command: commandStr, output: outputNode }]);
     setInput('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (commandHistory.length === 0) return;
+      const nextIndex = historyIndex < commandHistory.length - 1 ? historyIndex + 1 : historyIndex;
+      setHistoryIndex(nextIndex);
+      setInput(commandHistory[commandHistory.length - 1 - nextIndex] || '');
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        const nextIndex = historyIndex - 1;
+        setHistoryIndex(nextIndex);
+        setInput(commandHistory[commandHistory.length - 1 - nextIndex] || '');
+      } else if (historyIndex === 0) {
+        setHistoryIndex(-1);
+        setInput('');
+      }
+    }
   };
 
   return (
     <>
-      {/* Desktop CLI Launcher Button (Hidden on Mobile) */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="desktop-terminal-btn"
-        style={{
-          position: 'fixed',
-          bottom: 20,
-          left: 130,
-          zIndex: 9999,
-          background: 'rgba(10, 10, 24, 0.85)',
-          border: '1px solid rgba(16, 185, 129, 0.35)',
-          borderRadius: 100,
-          padding: '8px 14px',
-          color: '#10B981',
-          fontFamily: 'var(--mono)',
-          fontSize: '0.72rem',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.5), 0 0 15px rgba(16, 185, 129, 0.15)',
-        }}
-      >
-        <span>$ CLI</span>
-      </button>
-
-      <style jsx global>{`
-        @media (max-width: 768px) {
-          .desktop-terminal-btn {
-            display: none !important;
-          }
-        }
-      `}</style>
-
       <AnimatePresence>
         {isOpen && (
           <div
@@ -181,79 +258,155 @@ export default function TerminalDrawer() {
               justifyContent: 'center',
               paddingLeft: 12,
               paddingRight: 12,
-              background: 'rgba(0, 0, 0, 0.75)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
+              background: 'rgba(3, 4, 12, 0.85)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
             }}
             onClick={() => setIsOpen(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.94, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 10 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
               onClick={e => e.stopPropagation()}
               style={{
-                width: 660,
+                width: 720,
                 maxWidth: '100%',
-                height: 420,
-                maxHeight: 'calc(100vh - 100px)',
-                background: '#070714',
-                border: '1px solid rgba(56, 189, 248, 0.3)',
-                borderRadius: 14,
-                boxShadow: '0 25px 60px rgba(0,0,0,0.9), 0 0 35px rgba(16, 185, 129, 0.2)',
+                height: 480,
+                maxHeight: 'calc(100vh - 80px)',
+                background: 'linear-gradient(165deg, #070918 0%, #03040c 100%)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                borderRadius: 18,
+                boxShadow: '0 30px 80px rgba(0,0,0,0.95), 0 0 45px rgba(16, 185, 129, 0.25)',
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
                 fontFamily: 'var(--mono)',
+                position: 'relative',
               }}
             >
-              {/* Header */}
+              {/* Scanline overlay effect */}
               <div
                 style={{
-                  padding: '10px 14px',
+                  position: 'absolute',
+                  inset: 0,
+                  pointerEvents: 'none',
+                  background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%)',
+                  backgroundSize: '100% 4px',
+                  zIndex: 2,
+                  opacity: 0.4,
+                }}
+              />
+
+              {/* Terminal Header */}
+              <div
+                style={{
+                  padding: '10px 16px',
                   background: 'rgba(255, 255, 255, 0.04)',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  zIndex: 3,
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F59E0B', display: 'inline-block' }} />
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
-                  <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', marginLeft: 6 }}>vishal@neural-craft:~</span>
+                  <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#EF4444', display: 'inline-block', boxShadow: '0 0 8px rgba(239,68,68,0.6)' }} />
+                  <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#F59E0B', display: 'inline-block', boxShadow: '0 0 8px rgba(245,158,11,0.6)' }} />
+                  <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#10B981', display: 'inline-block', boxShadow: '0 0 8px rgba(16,185,129,0.6)' }} />
+                  <span style={{ fontSize: '0.74rem', color: '#10B981', marginLeft: 8, fontWeight: 600 }}>
+                    vishal@neural-craft:~ $
+                  </span>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: 16, padding: 4 }}
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    border: 'none',
+                    borderRadius: 6,
+                    color: 'rgba(255,255,255,0.6)',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    padding: '2px 8px',
+                  }}
                 >
                   ✕
                 </button>
               </div>
 
               {/* Terminal Body */}
-              <div style={{ flex: 1, padding: '14px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ flex: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, zIndex: 3 }}>
                 {history.map((item, idx) => (
                   <div key={idx}>
                     {item.command !== 'welcome' && (
-                      <p style={{ color: '#10B981', margin: '0 0 4px', fontSize: '0.8rem' }}>
+                      <p style={{ color: '#10B981', margin: '0 0 6px', fontSize: '0.82rem', fontWeight: 600 }}>
                         vishal@neural-craft:~$ <span style={{ color: '#ffffff' }}>{item.command}</span>
                       </p>
                     )}
                     <div style={{ fontSize: '0.78rem' }}>{item.output}</div>
                   </div>
                 ))}
+                <div ref={terminalEndRef} />
               </div>
 
-              {/* Terminal Input */}
-              <form onSubmit={handleCommand} style={{ padding: '10px 14px', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ color: '#10B981', fontSize: '0.8rem' }}>vishal@neural-craft:~$</span>
+              {/* Quick Action Chips Bar */}
+              <div
+                style={{
+                  padding: '6px 12px',
+                  background: 'rgba(0,0,0,0.6)',
+                  borderTop: '1px solid rgba(255,255,255,0.05)',
+                  display: 'flex',
+                  gap: 6,
+                  overflowX: 'auto',
+                  zIndex: 3,
+                }}
+              >
+                {QUICK_COMMANDS.map(chip => (
+                  <button
+                    key={chip.cmd}
+                    onClick={() => executeCommandString(chip.cmd)}
+                    style={{
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      border: '1px solid rgba(16, 185, 129, 0.25)',
+                      borderRadius: 6,
+                      color: '#10B981',
+                      fontSize: '0.68rem',
+                      fontFamily: 'var(--mono)',
+                      padding: '3px 8px',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Input Form */}
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
+                  executeCommandString(input);
+                }}
+                style={{
+                  padding: '10px 14px',
+                  background: 'rgba(5, 7, 20, 0.95)',
+                  borderTop: '1px solid rgba(255,255,255,0.08)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  zIndex: 3,
+                }}
+              >
+                <span style={{ color: '#10B981', fontSize: '0.84rem', fontWeight: 700 }}>vishal@neural-craft:~$</span>
                 <input
                   type="text"
                   value={input}
                   onChange={e => setInput(e.target.value)}
-                  placeholder="type a command (e.g. help, bio, certs)..."
+                  onKeyDown={handleKeyDown}
+                  placeholder="type command (use ↑/↓ for history)..."
                   autoFocus
                   style={{
                     flex: 1,
@@ -261,7 +414,7 @@ export default function TerminalDrawer() {
                     border: 'none',
                     color: '#ffffff',
                     fontFamily: 'var(--mono)',
-                    fontSize: '0.8rem',
+                    fontSize: '0.84rem',
                     outline: 'none',
                   }}
                 />
