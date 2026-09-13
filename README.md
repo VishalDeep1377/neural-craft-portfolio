@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="./public/readme_header_banner.png" alt="VISHAL DEEP — Software Engineer | Full Stack + AI Systems" width="100%" />
+  <img src="./public/videos/readme_header_banner.png" alt="VISHAL DEEP — Software Engineer | Full Stack + AI Systems" width="100%" />
 
   <br />
   <br />
